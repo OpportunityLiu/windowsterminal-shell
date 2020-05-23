@@ -317,12 +317,12 @@ function CreateProfileMenuItems(
     $elevated = "PowerShell -WindowStyle Hidden -Command ""Start-Process cmd.exe -WindowStyle Hidden -Verb RunAs -ArgumentList \""/c $executable -p \""\""$name\""\"" -d \""\""%V.\""\""\"" """
     $profileIcon = GetProfileIcon $profile $folder $localCache $icon $isPreview
 
-    if ($layout -eq "default") {
+    if ($layout -eq "Default") {
         $rootKey = "Registry::HKEY_CLASSES_ROOT\Directory\ContextMenus\MenuTerminal\shell\$order-$guid"
         $rootKeyElevated = "Registry::HKEY_CLASSES_ROOT\Directory\ContextMenus\MenuTerminalAdmin\shell\$order-$guid"
         CreateMenuItem $rootKey $name $profileIcon $command $false
-        CreateMenuItem $rootKeyElevated $name $profileIcon $elevated $true
-    } elseif ($layout -eq "flat") {
+        CreateMenuItem $rootKeyElevated $name $profileIcon $elevated $false
+    } elseif ($layout -eq "Flat") {
         CreateMenuItem "Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminal_$order-$guid" "打开 $name" $profileIcon $command $false
         CreateMenuItem "Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminalAdmin_$order-$guid" "以管理员身份打开 $name" $profileIcon $elevated $true   
         CreateMenuItem "Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\MenuTerminal_$order-$guid" "打开 $name" $profileIcon $command $false
@@ -347,7 +347,7 @@ function CreateMenuItems(
 
     $icon = GetWindowsTerminalIcon $folder $localCache
 
-    if ($layout -eq "default") {
+    if ($layout -eq "Default") {
         # defaut layout creates two menus
         New-Item -Path 'Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminal' -Force | Out-Null
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminal' -Name 'MUIVerb' -PropertyType String -Value '打开 Terminal (&T)' | Out-Null
@@ -366,15 +366,17 @@ function CreateMenuItems(
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminalAdmin' -Name 'Icon' -PropertyType String -Value $icon | Out-Null
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminalAdmin' -Name 'ExtendedSubCommandsKey' -PropertyType String -Value 'Directory\\ContextMenus\\MenuTerminalAdmin' | Out-Null
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminalAdmin' -Name 'Extended' -PropertyType String -Value '' | Out-Null
+        New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminalAdmin' -Name 'HasLUAShield' -PropertyType String -Value '' | Out-Null
 
         New-Item -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\MenuTerminalAdmin' -Force | Out-Null
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\MenuTerminalAdmin' -Name 'MUIVerb' -PropertyType String -Value '以管理员身份打开 Terminal' | Out-Null
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\MenuTerminalAdmin' -Name 'Icon' -PropertyType String -Value $icon | Out-Null
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\MenuTerminalAdmin' -Name 'ExtendedSubCommandsKey' -PropertyType String -Value 'Directory\\ContextMenus\\MenuTerminalAdmin' | Out-Null
         New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\MenuTerminalAdmin' -Name 'Extended' -PropertyType String -Value '' | Out-Null
+        New-ItemProperty -Path 'Registry::HKEY_CLASSES_ROOT\Directory\Background\shell\MenuTerminalAdmin' -Name 'HasLUAShield' -PropertyType String -Value '' | Out-Null
 
         New-Item -Path 'Registry::HKEY_CLASSES_ROOT\Directory\ContextMenus\MenuTerminalAdmin\shell' -Force | Out-Null
-    } elseif ($layout -eq "mini") {
+    } elseif ($layout -eq "Mini") {
         $command = "$executable -d ""%V."""
         $elevated = "PowerShell -WindowStyle Hidden -Command ""Start-Process cmd.exe -WindowStyle Hidden -Verb RunAs -ArgumentList \""/c $executable -d \""\""%V.\""\""\"" """
         CreateMenuItem "Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminalMini" "打开 Terminal (&T)" $icon $command $false
