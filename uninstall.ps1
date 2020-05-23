@@ -1,17 +1,21 @@
+#Requires -RunAsAdministrator
+#Requires -Version 7
+
 # Based on @nerdio01's version in https://github.com/microsoft/terminal/issues/1060
+
+[CmdletBinding()]
+param(
+    [Parameter(Position = 0)]
+    [ValidateSet('Default', 'Flat', 'Mini')]
+    [string] $Layout = 'default'
+)
 
 $localCache = "$Env:LOCALAPPDATA\Microsoft\WindowsApps\Cache"
 if (Test-Path $localCache) {
     Remove-Item $localCache -Recurse
 }
 
-if ($args.Count -eq 1) {
-    $layout = $args[0]
-} else {
-    $layout = "default"
-}
-
-Write-Host "Use" $layout "layout."
+Write-Host "Use" $layout.ToLower() "layout."
 
 if ($layout -eq "default") {
     Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\Directory\shell\MenuTerminal' -Recurse -ErrorAction Ignore | Out-Null
